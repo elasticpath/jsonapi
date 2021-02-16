@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/cheeryfella/jsonapi"
+	"github.com/moltin/jsonapi"
 )
 
 func TestErrorObjectWritesExpectedErrorMessage(t *testing.T) {
