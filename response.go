@@ -123,7 +123,7 @@ func MarshalPayloadWithoutIncluded(w io.Writer, model interface{}) error {
 	if err != nil {
 		return err
 	}
-	payload.clearIncluded()
+	payload.ClearIncluded()
 
 	return json.NewEncoder(w).Encode(payload)
 }
