@@ -7,7 +7,7 @@ import (
 
 // Payloader is used to encapsulate the One and Many payload types
 type Payloader interface {
-	ClearIncluded()
+	clearIncluded()
 }
 
 // NulledPayload allows for raw message to inspect nulls
@@ -24,7 +24,7 @@ type OnePayload struct {
 	Meta     *Meta          `json:"meta,omitempty"`
 }
 
-func (p *OnePayload) ClearIncluded() {
+func (p *OnePayload) clearIncluded() {
 	p.Included = []*ResourceObj{}
 }
 
@@ -37,7 +37,7 @@ type ManyPayload struct {
 	Meta     *Meta          `json:"meta,omitempty"`
 }
 
-func (p *ManyPayload) ClearIncluded() {
+func (p *ManyPayload) clearIncluded() {
 	p.Included = []*ResourceObj{}
 }
 
