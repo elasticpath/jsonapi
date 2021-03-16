@@ -8,6 +8,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/moltin/jsonapi"
 )
 
@@ -703,10 +705,10 @@ func TestNoRelations(t *testing.T) {
 
 func TestMarshalPayloadWithoutIncluded(t *testing.T) {
 	data := &Post{
-		ID:       1,
-		BlogID:   2,
-		Title:    "Foo",
-		Body:     "Bar",
+		ID:     1,
+		BlogID: 2,
+		Title:  "Foo",
+		Body:   "Bar",
 		Comments: []*Comment{
 			{
 				ID:   20,
@@ -967,4 +969,24 @@ func testBlog() *Blog {
 			},
 		},
 	}
+}
+
+func TestAddPagination(t *testing.T) {
+	payload := new(jsonapi.ManyPayload)
+
+	pagination := jsonapi.OffsetPagination{
+		URL:   "/?page[offset]=100&page[limit]=100",
+		Limit: 100,
+		Total: 532,
+	}
+
+	payload.AddPagination(&pagination)
+
+	expected := &jsonapi.Links{
+		"first": jsonapi.Link{Href: "/?page[offset]=0&page[limit]=100", Meta: jsonapi.Meta(nil)},
+		"last":  jsonapi.Link{Href: "/?page[offset]=500&page[limit]=100", Meta: jsonapi.Meta(nil)},
+		"next":  jsonapi.Link{Href: "/?page[offset]=200&page[limit]=100", Meta: jsonapi.Meta(nil)},
+		"prev":  jsonapi.Link{Href: "/?page[offset]=0&page[limit]=100", Meta: jsonapi.Meta(nil)},
+	}
+	assert.Equal(t, expected, payload.Links)
 }

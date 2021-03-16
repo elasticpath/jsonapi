@@ -12,6 +12,7 @@ import (
 // Payloader is used to encapsulate the One and Many payload types
 type Payloader interface {
 	clearIncluded()
+	AddPagination(paginator Paginator)
 }
 
 // NulledPayload allows for raw message to inspect nulls
@@ -32,6 +33,10 @@ func (p *OnePayload) clearIncluded() {
 	p.Included = []*ResourceObj{}
 }
 
+func (p *OnePayload) AddPagination(paginator Paginator) {
+
+}
+
 // ManyPayload is used to represent a generic JSON API payload where many
 // resources (Nodes) were included in an [] in the "data" key
 type ManyPayload struct {
@@ -43,6 +48,10 @@ type ManyPayload struct {
 
 func (p *ManyPayload) clearIncluded() {
 	p.Included = []*ResourceObj{}
+}
+
+func (p *ManyPayload) AddPagination(paginator Paginator) {
+	p.Links = paginator.GeneratePagination()
 }
 
 // ResourceObjNulls is used to represent a generic JSON API Resource with null fields
@@ -140,7 +149,7 @@ type RelationshipMetable interface {
 
 // Paginator allows clients to paginate the result set
 type Paginator interface {
-	GeneratePagination()
+	GeneratePagination() *Links
 }
 
 type OffsetPagination struct {
