@@ -138,6 +138,7 @@ type RelationshipMetable interface {
 	JSONAPIRelationshipMeta(relation string) *Meta
 }
 
+// Paginator allows clients to paginate the result set
 type Paginator interface {
 	GeneratePagination()
 }
