@@ -522,10 +522,3 @@ func convertToSliceInterface(i *interface{}) ([]interface{}, error) {
 	}
 	return response, nil
 }
-
-func AddPagination(payload Payloader, pagination Paginator) *Payloader{
-	if payload, ok := payload.(*ManyPayload); ok {
-		payload.Links = pagination.GeneratePagination()
-	}
-	return &payload
-}
