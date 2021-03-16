@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cheeryfella/jsonapi"
+	"github.com/moltin/jsonapi"
 )
 
 func unmarshalSamplePayload() (*Blog, error) {

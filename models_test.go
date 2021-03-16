@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/cheeryfella/jsonapi"
+	"github.com/moltin/jsonapi"
 )
 
 type BadModel struct {

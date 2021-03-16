@@ -65,6 +65,6 @@ the key in the "relationships" hash for the record.
 
 Use the methods below to Marshal and Unmarshal jsonapi.org json payloads.
 
-Visit the readme at https://github.com/cheeryfella/jsonapi
+Visit the readme at https://github.com/moltin/jsonapi
 */
 package jsonapi

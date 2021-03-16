@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/cheeryfella/jsonapi"
+	"github.com/moltin/jsonapi"
 )
 
 func TestErrorObjectWritesExpectedErrorMessage(t *testing.T) {
@@ -87,7 +87,7 @@ func TestMarshalErrorsWritesTheExpectedPayload(t *testing.T) {
 				Title: "Test title.",
 				Detail: "Test detail",
 				Links: &jsonapi.ErrorLink{
-					About: "/url/to/details",
+					About: "/URL/to/details",
 				},
 			}},
 			Out: map[string]interface{}{
@@ -95,7 +95,7 @@ func TestMarshalErrorsWritesTheExpectedPayload(t *testing.T) {
 					"title": "Test title.",
 					"detail": "Test detail",
 					"links": map[string]interface{}{
-						"about": "/url/to/details",
+						"about": "/URL/to/details",
 					},
 				}},
 			},
