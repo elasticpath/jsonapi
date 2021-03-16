@@ -3,6 +3,10 @@ package jsonapi
 import (
 	"encoding/json"
 	"fmt"
+	"math"
+	"regexp"
+	"strconv"
+	"strings"
 )
 
 // Payloader is used to encapsulate the One and Many payload types
@@ -43,8 +47,8 @@ func (p *ManyPayload) clearIncluded() {
 
 // ResourceObjNulls is used to represent a generic JSON API Resource with null fields
 type ResourceObjNulls struct {
-	Type       string          `json:"type"`
-	ID         string          `json:"id,omitempty"`
+	Type       string                     `json:"type"`
+	ID         string                     `json:"id,omitempty"`
 	Attributes map[string]json.RawMessage `json:"attributes,omitempty"`
 }
 
@@ -132,4 +136,112 @@ type Metable interface {
 type RelationshipMetable interface {
 	// JSONRelationshipMeta will be invoked for each relationship with the corresponding relation name (e.g. `comments`)
 	JSONAPIRelationshipMeta(relation string) *Meta
+}
+
+type Paginator interface {
+	GeneratePagination()
+}
+
+type OffsetPagination struct {
+	url   string
+	limit int64
+	total int64
+}
+
+func (p *OffsetPagination) GeneratePagination() *Links {
+	if p.total < p.limit { // no pagination needed
+		return nil
+	}
+
+	// initiate the url - if the page offset and limit have not been set or is devoid of all
+	// query parameters then initialising will make string replacement a simple operation
+
+	if !strings.Contains(p.url, "page[limit]") {
+		p.appenToURL("page[limit]="+strconv.FormatInt(p.limit, 10))
+	}
+	if !strings.Contains(p.url, "page[offset]") {
+		p.appenToURL("page[offset]=0")
+	}
+
+	links := Links{}
+	limit := int64(math.Min(float64(getPageParam("limit", p.url)), float64(p.limit)))
+	if limit == 0 {
+		limit = p.limit
+	}
+	offset := int64(math.Max(float64(getPageParam("offset", p.url)), float64(0)))
+
+	if offset > 0 {
+		firstUrl := p.url
+		replaceParam(&firstUrl, `page[limit]`, strconv.FormatInt(limit, 10))
+		replaceParam(&firstUrl, `page[offset]`, strconv.FormatInt(0, 10))
+		links[KeyFirstPage] = Link{
+			Href: firstUrl,
+		}
+		prevUrl := p.url
+		replaceParam(&prevUrl, `page[limit]`, strconv.FormatInt(limit, 10))
+		prevOffset := int64(math.Max(float64(offset - limit), float64(0)))
+		replaceParam(&prevUrl, `page[offset]`, strconv.FormatInt(prevOffset, 10))
+		links[KeyPreviousPage] = Link{
+			Href: prevUrl,
+		}
+	}
+
+	nextUrl := p.url
+	replaceParam(&nextUrl, `page[limit]`, strconv.FormatInt(limit, 10))
+	nextOffset := int64(math.Min(float64(offset + limit), float64(p.total)))
+	replaceParam(&nextUrl, `page[offset]`, strconv.FormatInt(nextOffset, 10))
+	links[KeyNextPage] = Link{
+		Href: nextUrl,
+	}
+
+	lastUrl := p.url
+	replaceParam(&lastUrl, `page[limit]`, strconv.FormatInt(limit, 10))
+	lastOffset := int64(math.Min(float64(((p.total/limit)*limit) + (offset % limit)), float64(p.total)))
+	replaceParam(&nextUrl, `page[offset]`, strconv.FormatInt(lastOffset, 10))
+	links[KeyLastPage] = Link{
+		Href: nextUrl,
+	}
+
+	return &links
+}
+
+func getPageParam(name, url string) int64 {
+	val := 0
+	valRe := regexp.MustCompile(fmt.Sprintf(`page\[%s\]=(\d+)`, name))
+	match := valRe.FindStringSubmatch(url)
+	if len(match) == 2 { // when we have found the \d portion
+		ql := match[1]
+		val, _ = strconv.Atoi(ql)
+	}
+	return int64(val)
+}
+
+func replaceParam(url *string, param, value string) {
+	var sb strings.Builder
+	sb.WriteString(param)
+	sb.WriteString("=")
+	sb.WriteString(value)
+	newParam := sb.String()
+
+	seek := regexSafe(fmt.Sprintf(`%s=\d+`, param))
+	regex := regexp.MustCompile(seek)
+	match := regex.ReplaceAllString(*url, newParam)
+
+	*url = match
+}
+
+func regexSafe(in string) string {
+	chars := []string{"]", "^", "\\", "[", ".", "(", ")", "-"}
+	r := strings.Join(chars, "")
+	re := regexp.MustCompile("([" + r + "])+")
+	out := re.ReplaceAllString(in, "\\$1")
+	return out
+}
+
+func (p *OffsetPagination) appenToURL(param string) {
+	if !strings.Contains(p.url, "?") {
+		p.url += "?"+param
+	} else {
+		p.url += "&"+param
+	}
 }
