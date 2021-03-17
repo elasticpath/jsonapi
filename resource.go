@@ -199,7 +199,7 @@ func (p *OffsetPagination) GeneratePagination() *Links {
 		}
 	}
 
-	if offset+limit < p.Total {
+	if offset+limit < p.Total-limit {
 		nextUrl := p.URL
 		replaceParam(&nextUrl, `page[limit]`, strconv.FormatInt(limit, 10))
 		nextOffset := offset + limit
@@ -209,7 +209,7 @@ func (p *OffsetPagination) GeneratePagination() *Links {
 		}
 	}
 
-	if offset+limit < p.Total-limit {
+	if offset+limit < p.Total {
 		lastUrl := p.URL
 		replaceParam(&lastUrl, `page[limit]`, strconv.FormatInt(limit, 10))
 		pages := p.Total / limit

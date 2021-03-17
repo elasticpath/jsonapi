@@ -986,7 +986,6 @@ func TestAddPagination(t *testing.T) {
 		"first": jsonapi.Link{Href: "/?page[offset]=0&page[limit]=100", Meta: jsonapi.Meta(nil)},
 		"last":  jsonapi.Link{Href: "/?page[offset]=500&page[limit]=100", Meta: jsonapi.Meta(nil)},
 		"next":  jsonapi.Link{Href: "/?page[offset]=200&page[limit]=100", Meta: jsonapi.Meta(nil)},
-		"prev":  jsonapi.Link{Href: "/?page[offset]=0&page[limit]=100", Meta: jsonapi.Meta(nil)},
 	}
 	assert.Equal(t, expected, payload.Links)
 }
