@@ -11,7 +11,44 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 		pagination OffsetPagination
 		result Links
 	}{
-		"Offset": {
+		"0 offset": {
+			pagination: OffsetPagination{
+				URL:   "/?page[limit]=111&page[offset]=0",
+				Limit: 100,
+				Total: 334,
+			},
+			result:     Links{
+				KeyNextPage: Link{Href: "/?page[limit]=100&page[offset]=100"},
+				KeyLastPage: Link{Href: "/?page[limit]=100&page[offset]=300"},
+			},
+
+		},
+		"0 offset and total a multiple of limit": {
+			pagination: OffsetPagination{
+				URL:   "/?page[limit]=111&page[offset]=0",
+				Limit: 100,
+				Total: 300,
+			},
+			result:     Links{
+				KeyNextPage: Link{Href: "/?page[limit]=100&page[offset]=100"},
+				KeyLastPage: Link{Href: "/?page[limit]=100&page[offset]=200"},
+			},
+
+		},
+		"Offset below limit": {
+			pagination: OffsetPagination{
+				URL:   "/?page[limit]=111&page[offset]=80",
+				Limit: 100,
+				Total: 334,
+			},
+			result:     Links{
+				KeyFirstPage: Link{Href: "/?page[limit]=100&page[offset]=0"},
+				KeyNextPage: Link{Href: "/?page[limit]=100&page[offset]=180"},
+				KeyLastPage: Link{Href: "/?page[limit]=100&page[offset]=280"},
+			},
+
+		},
+		"Mid range offset": {
 			pagination: OffsetPagination{
 				URL:   "/?page[limit]=111&page[offset]=111",
 				Limit: 100,

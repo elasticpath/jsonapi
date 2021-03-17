@@ -167,7 +167,7 @@ func (p *OffsetPagination) GeneratePagination() *Links {
 	// query parameters then initialising will make string replacement a simple operation
 
 	if !strings.Contains(p.URL, "page[limit]") {
-		p.appenToURL("page[limit]="+strconv.FormatInt(p.Limit, 10))
+		p.appenToURL("page[limit]=" + strconv.FormatInt(p.Limit, 10))
 	}
 	if !strings.Contains(p.URL, "page[offset]") {
 		p.appenToURL("page[offset]=0")
@@ -187,29 +187,45 @@ func (p *OffsetPagination) GeneratePagination() *Links {
 		links[KeyFirstPage] = Link{
 			Href: firstUrl,
 		}
+	}
+
+	if offset > limit {
 		prevUrl := p.URL
 		replaceParam(&prevUrl, `page[limit]`, strconv.FormatInt(limit, 10))
-		prevOffset := int64(math.Max(float64(offset - limit), float64(0)))
+		prevOffset := offset-limit
 		replaceParam(&prevUrl, `page[offset]`, strconv.FormatInt(prevOffset, 10))
 		links[KeyPreviousPage] = Link{
 			Href: prevUrl,
 		}
 	}
 
-	nextUrl := p.URL
-	replaceParam(&nextUrl, `page[limit]`, strconv.FormatInt(limit, 10))
-	nextOffset := int64(math.Min(float64(offset + limit), float64(p.Total)))
-	replaceParam(&nextUrl, `page[offset]`, strconv.FormatInt(nextOffset, 10))
-	links[KeyNextPage] = Link{
-		Href: nextUrl,
+	if offset+limit < p.Total {
+		nextUrl := p.URL
+		replaceParam(&nextUrl, `page[limit]`, strconv.FormatInt(limit, 10))
+		nextOffset := offset + limit
+		replaceParam(&nextUrl, `page[offset]`, strconv.FormatInt(nextOffset, 10))
+		links[KeyNextPage] = Link{
+			Href: nextUrl,
+		}
 	}
 
-	lastUrl := p.URL
-	replaceParam(&lastUrl, `page[limit]`, strconv.FormatInt(limit, 10))
-	lastOffset := int64(math.Min(float64(((p.Total/limit)*limit) + (offset % limit)), float64(p.Total)))
-	replaceParam(&nextUrl, `page[offset]`, strconv.FormatInt(lastOffset, 10))
-	links[KeyLastPage] = Link{
-		Href: nextUrl,
+	if offset+limit < p.Total-limit {
+		lastUrl := p.URL
+		replaceParam(&lastUrl, `page[limit]`, strconv.FormatInt(limit, 10))
+		pages := p.Total / limit
+		if p.Total%limit > 0 {
+			pages += 1
+		}
+		lastOffset := ((pages-1)*limit)
+		offsetShift := offset % limit
+		lastOffset += offsetShift
+		if lastOffset > p.Total {
+			lastOffset -= limit
+		}
+		replaceParam(&lastUrl, `page[offset]`, strconv.FormatInt(lastOffset, 10))
+		links[KeyLastPage] = Link{
+			Href: lastUrl,
+		}
 	}
 
 	return &links
@@ -250,8 +266,8 @@ func regexSafe(in string) string {
 
 func (p *OffsetPagination) appenToURL(param string) {
 	if !strings.Contains(p.URL, "?") {
-		p.URL += "?"+param
+		p.URL += "?" + param
 	} else {
-		p.URL += "&"+param
+		p.URL += "&" + param
 	}
 }
