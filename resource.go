@@ -241,7 +241,7 @@ func replaceParam(url *string, param, value string) {
 	sb.WriteString(value)
 	newParam := sb.String()
 
-	seek := regexSafe(fmt.Sprintf(`%s=\d+`, param))
+	seek := fmt.Sprintf(`%s=[^&]+`, regexSafe(param))
 	regex := regexp.MustCompile(seek)
 	match := regex.ReplaceAllString(*url, newParam)
 
