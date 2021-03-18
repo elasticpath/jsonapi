@@ -18,8 +18,8 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Total: 334,
 			},
 			result:     Links{
-				KeyNextPage: Link{Href: "/?page[limit]=100&page[offset]=100"},
-				KeyLastPage: Link{Href: "/?page[limit]=100&page[offset]=300"},
+				KeyNextPage: "/?page[limit]=100&page[offset]=100",
+				KeyLastPage: "/?page[limit]=100&page[offset]=300",
 			},
 
 		},
@@ -30,8 +30,8 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Total: 300,
 			},
 			result:     Links{
-				KeyNextPage: Link{Href: "/?page[limit]=100&page[offset]=100"},
-				KeyLastPage: Link{Href: "/?page[limit]=100&page[offset]=200"},
+				KeyNextPage: "/?page[limit]=100&page[offset]=100",
+				KeyLastPage: "/?page[limit]=100&page[offset]=200",
 			},
 
 		},
@@ -42,9 +42,9 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Total: 334,
 			},
 			result:     Links{
-				KeyFirstPage: Link{Href: "/?page[limit]=100&page[offset]=0"},
-				KeyNextPage: Link{Href: "/?page[limit]=100&page[offset]=180"},
-				KeyLastPage: Link{Href: "/?page[limit]=100&page[offset]=280"},
+				KeyFirstPage: "/?page[limit]=100&page[offset]=0",
+				KeyNextPage: "/?page[limit]=100&page[offset]=180",
+				KeyLastPage: "/?page[limit]=100&page[offset]=280",
 			},
 
 		},
@@ -55,10 +55,10 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Total: 334,
 			},
 			result:     Links{
-				KeyFirstPage: Link{Href: "/?page[limit]=100&page[offset]=0"},
-				KeyPreviousPage: Link{Href: "/?page[limit]=100&page[offset]=11"},
-				KeyNextPage: Link{Href: "/?page[limit]=100&page[offset]=211"},
-				KeyLastPage: Link{Href: "/?page[limit]=100&page[offset]=311"},
+				KeyFirstPage: "/?page[limit]=100&page[offset]=0",
+				KeyPreviousPage: "/?page[limit]=100&page[offset]=11",
+				KeyNextPage: "/?page[limit]=100&page[offset]=211",
+				KeyLastPage: "/?page[limit]=100&page[offset]=311",
 			},
 
 		},
@@ -69,10 +69,10 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Total: 334,
 			},
 			result:     Links{
-				KeyFirstPage: Link{Href: "/?page[limit]=100&page[offset]=0&page[sort]=-1&aparam=2"},
-				KeyPreviousPage: Link{Href: "/?page[limit]=100&page[offset]=11&page[sort]=-1&aparam=2"},
-				KeyNextPage: Link{Href: "/?page[limit]=100&page[offset]=211&page[sort]=-1&aparam=2"},
-				KeyLastPage: Link{Href: "/?page[limit]=100&page[offset]=311&page[sort]=-1&aparam=2"},
+				KeyFirstPage: "/?page[limit]=100&page[offset]=0&page[sort]=-1&aparam=2",
+				KeyPreviousPage: "/?page[limit]=100&page[offset]=11&page[sort]=-1&aparam=2",
+				KeyNextPage: "/?page[limit]=100&page[offset]=211&page[sort]=-1&aparam=2",
+				KeyLastPage: "/?page[limit]=100&page[offset]=311&page[sort]=-1&aparam=2",
 			},
 
 		},
@@ -83,10 +83,10 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Total: 334,
 			},
 			result:     Links{
-				KeyFirstPage: Link{Href: "/?page[sort]=-1&aparam=2&page[limit]=100&page[offset]=0"},
-				KeyPreviousPage: Link{Href: "/?page[sort]=-1&aparam=2&page[limit]=100&page[offset]=11"},
-				KeyNextPage: Link{Href: "/?page[sort]=-1&aparam=2&page[limit]=100&page[offset]=211"},
-				KeyLastPage: Link{Href: "/?page[sort]=-1&aparam=2&page[limit]=100&page[offset]=311"},
+				KeyFirstPage: "/?page[sort]=-1&aparam=2&page[limit]=100&page[offset]=0",
+				KeyPreviousPage: "/?page[sort]=-1&aparam=2&page[limit]=100&page[offset]=11",
+				KeyNextPage: "/?page[sort]=-1&aparam=2&page[limit]=100&page[offset]=211",
+				KeyLastPage: "/?page[sort]=-1&aparam=2&page[limit]=100&page[offset]=311",
 			},
 
 		},
@@ -97,10 +97,10 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Total: 334,
 			},
 			result:     Links{
-				KeyFirstPage: Link{Href: "/?page[sort]=-1&page[limit]=100&aparam=2&page[offset]=0&lastparam=owt"},
-				KeyPreviousPage: Link{Href: "/?page[sort]=-1&page[limit]=100&aparam=2&page[offset]=11&lastparam=owt"},
-				KeyNextPage: Link{Href: "/?page[sort]=-1&page[limit]=100&aparam=2&page[offset]=211&lastparam=owt"},
-				KeyLastPage: Link{Href: "/?page[sort]=-1&page[limit]=100&aparam=2&page[offset]=311&lastparam=owt"},
+				KeyFirstPage: "/?page[sort]=-1&page[limit]=100&aparam=2&page[offset]=0&lastparam=owt",
+				KeyPreviousPage: "/?page[sort]=-1&page[limit]=100&aparam=2&page[offset]=11&lastparam=owt",
+				KeyNextPage: "/?page[sort]=-1&page[limit]=100&aparam=2&page[offset]=211&lastparam=owt",
+				KeyLastPage: "/?page[sort]=-1&page[limit]=100&aparam=2&page[offset]=311&lastparam=owt",
 			},
 
 		},
@@ -111,8 +111,8 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Total: 334,
 			},
 			result:     Links{
-				KeyNextPage: Link{Href: "/?page[limit]=100&page[offset]=100"},
-				KeyLastPage: Link{Href: "/?page[limit]=100&page[offset]=300"},
+				KeyNextPage: "/?page[limit]=100&page[offset]=100",
+				KeyLastPage: "/?page[limit]=100&page[offset]=300",
 			},
 
 		},
@@ -123,8 +123,8 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Total: 334,
 			},
 			result:     Links{
-				KeyNextPage: Link{Href: "/?param=owt&page[limit]=100&page[offset]=100"},
-				KeyLastPage: Link{Href: "/?param=owt&page[limit]=100&page[offset]=300"},
+				KeyNextPage: "/?param=owt&page[limit]=100&page[offset]=100",
+				KeyLastPage: "/?param=owt&page[limit]=100&page[offset]=300",
 			},
 
 		},
