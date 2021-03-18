@@ -167,10 +167,10 @@ func (p *OffsetPagination) GeneratePagination() *Links {
 	// query parameters then initialising will make string replacement a simple operation
 
 	if !strings.Contains(p.URL, "page[limit]") {
-		p.appenToURL("page[limit]=" + strconv.FormatInt(p.Limit, 10))
+		p.appendToURL("page[limit]=" + strconv.FormatInt(p.Limit, 10))
 	}
 	if !strings.Contains(p.URL, "page[offset]") {
-		p.appenToURL("page[offset]=0")
+		p.appendToURL("page[offset]=0")
 	}
 
 	links := Links{}
@@ -184,9 +184,7 @@ func (p *OffsetPagination) GeneratePagination() *Links {
 		firstUrl := p.URL
 		replaceParam(&firstUrl, `page[limit]`, strconv.FormatInt(limit, 10))
 		replaceParam(&firstUrl, `page[offset]`, strconv.FormatInt(0, 10))
-		links[KeyFirstPage] = Link{
-			Href: firstUrl,
-		}
+		links[KeyFirstPage] = firstUrl
 	}
 
 	if offset > limit {
@@ -194,9 +192,7 @@ func (p *OffsetPagination) GeneratePagination() *Links {
 		replaceParam(&prevUrl, `page[limit]`, strconv.FormatInt(limit, 10))
 		prevOffset := offset-limit
 		replaceParam(&prevUrl, `page[offset]`, strconv.FormatInt(prevOffset, 10))
-		links[KeyPreviousPage] = Link{
-			Href: prevUrl,
-		}
+		links[KeyPreviousPage] = prevUrl
 	}
 
 	if offset+limit < p.Total-limit {
@@ -204,9 +200,7 @@ func (p *OffsetPagination) GeneratePagination() *Links {
 		replaceParam(&nextUrl, `page[limit]`, strconv.FormatInt(limit, 10))
 		nextOffset := offset + limit
 		replaceParam(&nextUrl, `page[offset]`, strconv.FormatInt(nextOffset, 10))
-		links[KeyNextPage] = Link{
-			Href: nextUrl,
-		}
+		links[KeyNextPage] = nextUrl
 	}
 
 	if offset+limit < p.Total {
@@ -223,9 +217,7 @@ func (p *OffsetPagination) GeneratePagination() *Links {
 			lastOffset -= limit
 		}
 		replaceParam(&lastUrl, `page[offset]`, strconv.FormatInt(lastOffset, 10))
-		links[KeyLastPage] = Link{
-			Href: lastUrl,
-		}
+		links[KeyLastPage] = lastUrl
 	}
 
 	return &links
@@ -264,7 +256,7 @@ func regexSafe(in string) string {
 	return out
 }
 
-func (p *OffsetPagination) appenToURL(param string) {
+func (p *OffsetPagination) appendToURL(param string) {
 	if !strings.Contains(p.URL, "?") {
 		p.URL += "?" + param
 	} else {
