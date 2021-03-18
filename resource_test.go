@@ -128,6 +128,18 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 			},
 
 		},
+		"Non numeric parameter values": {
+			pagination: OffsetPagination{
+				URL:   "/?page[limit]=abc&page[offset]=def",
+				Limit: 100,
+				Total: 334,
+			},
+			result:     Links{
+				KeyLastPage: "/?page[limit]=100&page[offset]=300",
+				KeyNextPage: "/?page[limit]=100&page[offset]=100",
+			},
+
+		},
 	}
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
