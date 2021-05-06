@@ -440,6 +440,7 @@ func handleField(
 	fieldValue reflect.Value) (value reflect.Value, err error) {
 
 	value = reflect.ValueOf(attribute)
+
 	switch fieldType.Kind() {
 	case reflect.Bool:
 		val, err := handleBool(attribute)
@@ -497,6 +498,8 @@ func handleField(
 			return handleTime(attribute, args, fieldValue)
 		}
 		return handleStruct(attribute, fieldValue)
+	case reflect.Map:
+		return handleMap(attribute, args, fieldType)
 	}
 
 	return
@@ -716,6 +719,40 @@ func handleSlice(
 	return vals, nil
 }
 
+// handleMap
+func handleMap(
+	attribute interface{},
+	args []string,
+	fieldType reflect.Type,
+) (value reflect.Value, err error) {
+
+	// check passed values is a struct
+
+	// TODO: Ideally we want to use the actual key type rather than assume string
+	//t := reflect.TypeOf(attribute).Elem()
+	//submittedValues := reflect.ValueOf(attribute).Convert(t)
+	submittedValues, _ := attribute.(map[string]interface{})
+
+	vals := reflect.MakeMap(fieldType)
+
+	mapIndexType := reflect.TypeOf(vals.Interface()).Key()
+	mapValueType := reflect.TypeOf(vals.Interface()).Elem()
+
+	for key, val := range submittedValues {
+		v, tErr := handleField(val, args, mapValueType, reflect.New(mapValueType))
+
+		if tErr != nil {
+			log.Error().Err(tErr).Msg("Failed to handle field")
+			return reflect.Value{}, tErr
+		}
+
+		converted := reflect.ValueOf(key).Convert(mapIndexType)
+		vals.SetMapIndex(converted, v.Elem())
+	}
+
+	return vals, nil
+}
+
 // handlePointer
 func handlePointer(
 	attribute interface{},
@@ -804,6 +841,10 @@ func handleStruct(
 		if val, ok := attribute.(float64); ok {
 			buf = []byte(strconv.FormatFloat(val, 'f', -1, 64))
 		}
+		if val, ok := attribute.(map[string]interface{}); ok {
+			buf, _ = json.Marshal(val)
+		}
+
 		in := []reflect.Value{reflect.ValueOf(buf)}
 		_ = method.Call(in)
 
