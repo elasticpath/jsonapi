@@ -742,7 +742,6 @@ func handleMap(
 		v, tErr := handleField(val, args, mapValueType, reflect.New(mapValueType))
 
 		if tErr != nil {
-			fmt.Printf("Failed to handle field :%+v\n", tErr)
 			return reflect.Value{}, tErr
 		}
 
