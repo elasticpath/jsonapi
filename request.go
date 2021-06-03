@@ -280,6 +280,28 @@ func unmarshalNode(data *ResourceObj, nulls map[string]interface{}, model reflec
 			}
 
 			assign(fieldValue, value)
+		case annotation == annotationMeta:
+			meta := data.Meta
+
+			if meta == nil || len(*meta) == 0 {
+				continue
+			}
+
+			m := (*meta)[args[1]]
+
+			// continue if the m was not included in the request
+			if m == nil {
+				continue
+			}
+
+			structField := fieldType
+			value, err := unmarshalAttribute(m, args, structField, fieldValue)
+			if err != nil {
+				er = err
+				break
+			}
+
+			assign(fieldValue, value)
 		case annotation == annotationRelation:
 			if data.Relationships == nil || data.Relationships[args[1]] == nil {
 				continue

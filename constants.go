@@ -5,6 +5,7 @@ const (
 	annotationJSONAPI   = "jsonapi"
 	annotationPrimary   = "primary"
 	annotationAttribute = "attr"
+	annotationMeta      = "meta"
 	annotationRelation  = "relation"
 	annotationOmitEmpty = "omitempty"
 	annotationISO8601   = "iso8601"
