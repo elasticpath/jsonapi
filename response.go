@@ -341,6 +341,36 @@ func visitModelNode(model interface{}, included *map[string]*ResourceObj,
 				}
 			}
 
+		case annotation == annotationMeta:
+			if node.Meta == nil {
+				node.Meta = &Meta{}
+			}
+
+			omitEmpty := false
+
+			emptyValue := reflect.Zero(fieldValue.Type())
+
+			if len(args) > 2 {
+				for _, arg := range args[2:] {
+					switch arg {
+					case annotationOmitEmpty:
+						omitEmpty = true
+					}
+				}
+			}
+
+			// See if we need to omit this field
+			if omitEmpty && reflect.DeepEqual(fieldValue.Interface(), emptyValue.Interface()) {
+				continue
+			}
+
+			strAttr, ok := fieldValue.Interface().(string)
+			if ok {
+				(*node.Meta)[args[1]] = strAttr
+			} else {
+				(*node.Meta)[args[1]] = fieldValue.Interface()
+			}
+			
 		case annotation == annotationRelation:
 			var omitEmpty bool
 
