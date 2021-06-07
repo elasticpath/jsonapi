@@ -2,7 +2,7 @@ package jsonapi
 
 import (
 	"encoding/json"
-	"fmt"
+	"strings"
 )
 
 // Intger
@@ -205,27 +205,26 @@ type JSONString struct {
 	Value string
 }
 
-// UnmarshalJSON unmarshalls an integer jsonfield into a JSONInt
-func (i *JSONString) UnmarshalJSON(data []byte) error {
+// UnmarshalJSON unmarshalls a string jsonfield into a JSONString
+func (s *JSONString) UnmarshalJSON(data []byte) error {
 	// If this method was called, the value was set.
-	i.Set = true
+	s.Set = true
 
-	if data == nil || string(data) == "null" {
+	str := string(data)
+
+	if data == nil || str == "null" {
 		// The key was set to null
-		i.Null = true
+		s.Null = true
 		return nil
 	}
 
-	// The key isn't set to null
-	var temp string
-	if err := json.Unmarshal(data, &temp); err != nil {
-		fmt.Printf("error decoding sakura response: %v", err)
-		if e, ok := err.(*json.SyntaxError); ok {
-			fmt.Printf("syntax error at byte offset %d", e.Offset)
-		}
-		fmt.Printf("sakura response: %q", data)
-		return err
+	// For some reason, extra quotes are being wrapped around the string value
+	// so we need to remove them
+	if strings.HasPrefix(str,`"`) {
+		str = strings.TrimPrefix(str, `"`)
+		str = strings.TrimSuffix(str, `"`)
 	}
-	i.Value = temp
+
+	s.Value = str
 	return nil
 }
