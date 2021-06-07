@@ -370,7 +370,7 @@ func visitModelNode(model interface{}, included *map[string]*ResourceObj,
 			} else {
 				(*node.Meta)[args[1]] = fieldValue.Interface()
 			}
-			
+
 		case annotation == annotationRelation:
 			var omitEmpty bool
 

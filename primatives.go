@@ -205,27 +205,27 @@ type JSONString struct {
 	Value string
 }
 
-// UnmarshalJSON unmarshalls an integer jsonfield into a JSONInt
-func (i *JSONString) UnmarshalJSON(data []byte) error {
+// UnmarshalJSON unmarshalls a string jsonfield into a JSONString
+func (s *JSONString) UnmarshalJSON(data []byte) error {
 	// If this method was called, the value was set.
-	i.Set = true
+	s.Set = true
 
 	if data == nil || string(data) == "null" {
 		// The key was set to null
-		i.Null = true
+		s.Null = true
 		return nil
 	}
 
 	// The key isn't set to null
 	var temp string
 	if err := json.Unmarshal(data, &temp); err != nil {
-		fmt.Printf("error decoding sakura response: %v", err)
+		fmt.Printf("[JSONAPI] error decoding response: %v", err)
 		if e, ok := err.(*json.SyntaxError); ok {
-			fmt.Printf("syntax error at byte offset %d", e.Offset)
+			fmt.Printf("[JSONAPI] syntax error at byte offset %d", e.Offset)
 		}
-		fmt.Printf("sakura response: %q", data)
+		fmt.Printf("[JSONAPI] response: %q", data)
 		return err
 	}
-	i.Value = temp
+	s.Value = temp
 	return nil
 }
