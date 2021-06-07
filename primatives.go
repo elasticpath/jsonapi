@@ -2,7 +2,7 @@ package jsonapi
 
 import (
 	"encoding/json"
-	"strings"
+	"fmt"
 )
 
 // Intger
@@ -210,21 +210,22 @@ func (s *JSONString) UnmarshalJSON(data []byte) error {
 	// If this method was called, the value was set.
 	s.Set = true
 
-	str := string(data)
-
-	if data == nil || str == "null" {
+	if data == nil || string(data) == "null" {
 		// The key was set to null
 		s.Null = true
 		return nil
 	}
 
-	// For some reason, extra quotes are being wrapped around the string value
-	// so we need to remove them
-	if strings.HasPrefix(str,`"`) {
-		str = strings.TrimPrefix(str, `"`)
-		str = strings.TrimSuffix(str, `"`)
+	// The key isn't set to null
+	var temp string
+	if err := json.Unmarshal(data, &temp); err != nil {
+		fmt.Printf("[JSONAPI] error decoding response: %v", err)
+		if e, ok := err.(*json.SyntaxError); ok {
+			fmt.Printf("[JSONAPI] syntax error at byte offset %d", e.Offset)
+		}
+		fmt.Printf("[JSONAPI] response: %q", data)
+		return err
 	}
-
-	s.Value = str
+	s.Value = temp
 	return nil
 }

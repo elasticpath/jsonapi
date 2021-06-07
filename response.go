@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"html"
 	"io"
 	"reflect"
 	"strconv"
@@ -366,11 +367,11 @@ func visitModelNode(model interface{}, included *map[string]*ResourceObj,
 
 			strAttr, ok := fieldValue.Interface().(string)
 			if ok {
-				(*node.Meta)[args[1]] = strAttr
+				(*node.Meta)[args[1]] = html.UnescapeString(strAttr)
 			} else {
 				(*node.Meta)[args[1]] = fieldValue.Interface()
 			}
-			
+
 		case annotation == annotationRelation:
 			var omitEmpty bool
 
