@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"html"
 	"io"
 	"reflect"
 	"strconv"
@@ -858,7 +857,7 @@ func handleStruct(
 	if method.IsValid() {
 		var buf []byte
 		if val, ok := attribute.(string); ok {
-			buf = []byte(`"` + html.EscapeString(val) + `"`)
+			buf = []byte(`"` + strings.ReplaceAll(val, `"`, `\"`) + `"`)
 		}
 		if val, ok := attribute.(float64); ok {
 			buf = []byte(strconv.FormatFloat(val, 'f', -1, 64))
