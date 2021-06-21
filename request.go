@@ -717,14 +717,13 @@ func handleSlice(
 	args []string,
 	fieldType reflect.Type,
 	fieldValue reflect.Value) (value reflect.Value, err error) {
-
 	// check passed values is a struct
 	submittedValues, ok := attribute.([]interface{})
 	if !ok {
 		return reflect.Value{}, errors.New("require slice of values to unmarshall into slice")
 	}
 
-	// find type tp pass back to handle field - recursively filling the values
+	// find type to pass back to handle field - recursively filling the values
 	sliceType := fieldType.Elem()
 
 	vals := reflect.MakeSlice(reflect.SliceOf(sliceType), 0, len(submittedValues))
@@ -735,7 +734,7 @@ func handleSlice(
 			return reflect.Value{}, tErr
 		}
 
-		vals = reflect.Append(vals, v)
+		vals = reflect.Append(vals, v.Elem())
 	}
 
 	return vals, nil
@@ -747,28 +746,40 @@ func handleMap(
 	args []string,
 	fieldType reflect.Type,
 ) (value reflect.Value, err error) {
-
 	// check passed values is a struct
 
 	// TODO: Ideally we want to use the actual key type rather than assume string
 	//t := reflect.TypeOf(attribute).Elem()
 	//submittedValues := reflect.ValueOf(attribute).Convert(t)
 	submittedValues, _ := attribute.(map[string]interface{})
-
 	vals := reflect.MakeMap(fieldType)
 
 	mapIndexType := reflect.TypeOf(vals.Interface()).Key()
 	mapValueType := reflect.TypeOf(vals.Interface()).Elem()
 
 	for key, val := range submittedValues {
-		v, tErr := handleField(val, args, mapValueType, reflect.New(mapValueType))
+		var (
+			v    reflect.Value
+			tErr error
+		)
+
+		if reflect.TypeOf(val).Kind() == reflect.Slice {
+			v, tErr = handleField(val, args, mapValueType, reflect.New(mapValueType.Elem()))
+		} else {
+			v, tErr = handleField(val, args, mapValueType, reflect.New(mapValueType))
+		}
 
 		if tErr != nil {
 			return reflect.Value{}, tErr
 		}
 
 		converted := reflect.ValueOf(key).Convert(mapIndexType)
-		vals.SetMapIndex(converted, v.Elem())
+
+		if v.Kind() == reflect.Slice {
+			vals.SetMapIndex(converted, v)
+		} else {
+			vals.SetMapIndex(converted, v.Elem())
+		}
 	}
 
 	return vals, nil
@@ -840,7 +851,6 @@ func handleTime(attribute interface{}, args []string, fieldValue reflect.Value) 
 func handleStruct(
 	attribute interface{},
 	fieldValue reflect.Value) (reflect.Value, error) {
-
 	data, err := json.Marshal(attribute)
 	if err != nil {
 		return reflect.Value{}, err
@@ -852,6 +862,7 @@ func handleStruct(
 	} else {
 		model = reflect.New(fieldValue.Type())
 	}
+
 	// handle custom structs which need UnmarshalJSON to work.
 	method := model.MethodByName("UnmarshalJSON")
 	if method.IsValid() {
@@ -890,11 +901,16 @@ func handleStructSlice(
 	fieldValue reflect.Value) (reflect.Value, error) {
 	models := reflect.New(fieldValue.Type()).Elem()
 	dataMap := reflect.ValueOf(attribute).Interface().([]interface{})
+
+	if fieldValue.Type().Kind() == reflect.Ptr {
+		sliceType := reflect.Indirect(fieldValue).Type()
+		models = reflect.MakeSlice(reflect.SliceOf(sliceType), 0, len(dataMap))
+	}
+
 	for _, data := range dataMap {
 		model := reflect.New(fieldValue.Type().Elem()).Elem()
 
 		value, err := handleStruct(data, model)
-
 		if err != nil {
 			continue
 		}
