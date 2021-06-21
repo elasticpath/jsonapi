@@ -763,6 +763,11 @@ func handleMap(
 			tErr error
 		)
 
+		// If the slice is nil, we don't want to do anything with it
+		if val == nil {
+			continue
+		}
+
 		if reflect.TypeOf(val).Kind() == reflect.Slice {
 			v, tErr = handleField(val, args, mapValueType, reflect.New(mapValueType.Elem()))
 		} else {
