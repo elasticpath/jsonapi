@@ -734,7 +734,11 @@ func handleSlice(
 			return reflect.Value{}, tErr
 		}
 
-		vals = reflect.Append(vals, v.Elem())
+		if v.Kind() == reflect.Slice {
+			vals = reflect.Append(vals, v.Elem())
+		} else {
+			vals = reflect.Append(vals, v)
+		}
 	}
 
 	return vals, nil
@@ -763,12 +767,9 @@ func handleMap(
 			tErr error
 		)
 
-		// If the slice is nil, we don't want to do anything with it
-		if val == nil {
-			continue
-		}
+		isSlice := val != nil && reflect.TypeOf(val).Kind() == reflect.Slice
 
-		if reflect.TypeOf(val).Kind() == reflect.Slice {
+		if isSlice {
 			v, tErr = handleField(val, args, mapValueType, reflect.New(mapValueType.Elem()))
 		} else {
 			v, tErr = handleField(val, args, mapValueType, reflect.New(mapValueType))
