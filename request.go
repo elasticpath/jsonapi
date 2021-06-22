@@ -734,7 +734,7 @@ func handleSlice(
 			return reflect.Value{}, tErr
 		}
 
-		if v.Kind() == reflect.Struct {
+		if v.Kind() == reflect.Slice {
 			vals = reflect.Append(vals, v.Elem())
 		} else {
 			vals = reflect.Append(vals, v)
