@@ -138,6 +138,12 @@ func marshalOne(model interface{}) (*OnePayload, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// There's no data here so return Data: null
+	if rootNode.ID == "" {
+		return &OnePayload{Data: nil}, nil
+	}
+
 	payload := &OnePayload{Data: rootNode}
 
 	payload.Included = nodeMapValues(&included)
