@@ -740,6 +740,54 @@ func TestMarshalPayloadWithoutIncluded(t *testing.T) {
 	}
 }
 
+func TestMarshalWithoutIncluded(t *testing.T) {
+	post := &Post{
+		ID:     1,
+		BlogID: 2,
+		Title:  "Foo",
+		Body:   "Bar",
+		Comments: []*Comment{
+			{
+				ID:   20,
+				Body: "First",
+			},
+			{
+				ID:   21,
+				Body: "Hello World",
+			},
+		},
+		LatestComment: &Comment{
+			ID:   22,
+			Body: "Cool!",
+		},
+	}
+
+	posts := []*Post{post, {ID: 2}}
+	var jsonData map[string]interface{}
+
+	// One
+	out1 := bytes.NewBuffer(nil)
+	jsonapi.MarshalPayload(out1, post)
+
+	if err := json.Unmarshal(out1.Bytes(), &jsonData); err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := jsonData["data"].(map[string]interface{}); !ok {
+		t.Fatalf("data key did not contain an Hash/Dict/Map")
+	}
+
+	// Many
+	out2 := bytes.NewBuffer(nil)
+	jsonapi.MarshalPayload(out2, posts)
+
+	if err := json.Unmarshal(out2.Bytes(), &jsonData); err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := jsonData["data"].([]interface{}); !ok {
+		t.Fatalf("data key did not contain an Array")
+	}
+}
+
 func TestMarshalPayload_many(t *testing.T) {
 	data := []interface{}{
 		&Blog{
