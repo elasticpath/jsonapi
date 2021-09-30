@@ -111,6 +111,48 @@ func Marshal(models interface{}) (Payloader, error) {
 	}
 }
 
+// MarshalWithoutIncluded does the same as MarshalPayloadWithoutIncluded except it just returns the payload
+// and doesn't write out results. Useful if you use your own JSON rendering
+// library.
+func MarshalWithoutIncluded(models interface{}) (Payloader, error) {
+	switch vals := reflect.ValueOf(models); vals.Kind() {
+	case reflect.Slice:
+		m, err := convertToSliceInterface(&models)
+		if err != nil {
+			return nil, err
+		}
+
+		payload, err := marshalMany(m)
+		if err != nil {
+			return nil, err
+		}
+
+		if linkableModels, isLinkable := models.(Linkable); isLinkable {
+			jl := linkableModels.JSONAPILinks()
+			if er := jl.validate(); er != nil {
+				return nil, er
+			}
+			payload.Links = linkableModels.JSONAPILinks()
+		}
+
+		if metableModels, ok := models.(Metable); ok {
+			payload.Meta = metableModels.JSONAPIMeta()
+		}
+
+		payload.clearIncluded()
+
+		return payload, nil
+	case reflect.Ptr:
+		// Check that the pointer was to a struct
+		if reflect.Indirect(vals).Kind() != reflect.Struct {
+			return nil, ErrUnexpectedType
+		}
+		return marshalOne(models)
+	default:
+		return nil, ErrUnexpectedType
+	}
+}
+
 // MarshalPayloadWithoutIncluded writes a jsonapi response with one or many
 // records, without the related records sideloaded into "included" array.
 // If you want to serialize the relations into the "included" array see
