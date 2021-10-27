@@ -13,6 +13,7 @@ import (
 type Payloader interface {
 	clearIncluded()
 	AddPagination(paginator Paginator)
+	AddMeta(meta *Meta)
 }
 
 // NulledPayload allows for raw message to inspect nulls
@@ -37,6 +38,10 @@ func (p *OnePayload) AddPagination(paginator Paginator) {
 
 }
 
+func (p *OnePayload) AddMeta(meta *Meta) {
+	p.Meta = meta
+}
+
 // ManyPayload is used to represent a generic JSON API payload where many
 // resources (Nodes) were included in an [] in the "data" key
 type ManyPayload struct {
@@ -52,6 +57,10 @@ func (p *ManyPayload) clearIncluded() {
 
 func (p *ManyPayload) AddPagination(paginator Paginator) {
 	p.Links = paginator.GeneratePagination()
+}
+
+func (p *ManyPayload) AddMeta(meta *Meta) {
+	p.Meta = meta
 }
 
 // ResourceObjNulls is used to represent a generic JSON API Resource with null fields
@@ -190,7 +199,7 @@ func (p *OffsetPagination) GeneratePagination() *Links {
 	if offset > limit {
 		prevUrl := p.URL
 		replaceParam(&prevUrl, `page[limit]`, strconv.FormatInt(limit, 10))
-		prevOffset := offset-limit
+		prevOffset := offset - limit
 		replaceParam(&prevUrl, `page[offset]`, strconv.FormatInt(prevOffset, 10))
 		links[KeyPreviousPage] = prevUrl
 	}
@@ -210,7 +219,7 @@ func (p *OffsetPagination) GeneratePagination() *Links {
 		if p.Total%limit > 0 {
 			pages += 1
 		}
-		lastOffset := ((pages-1)*limit)
+		lastOffset := ((pages - 1) * limit)
 		offsetShift := offset % limit
 		lastOffset += offsetShift
 		if lastOffset > p.Total {
