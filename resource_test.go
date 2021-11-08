@@ -162,6 +162,27 @@ func TestManyPayload_AddPagination(t *testing.T) {
 				},
 			},
 		},
+		"appends results meta": {
+			payload: ManyPayload{
+				Data: nil,
+				Meta: &Meta{
+					"foo": "bar",
+				},
+			},
+			paginator: OffsetPagination{
+				Total: 10,
+				Limit: 100,
+			},
+			expected: ManyPayload{
+				Data: nil,
+				Meta: &Meta{
+					"foo": "bar",
+					"results": &Meta{
+						"total": int64(10),
+					},
+				},
+			},
+		},
 	}
 
 	for name, test := range tests {
