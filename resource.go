@@ -53,9 +53,10 @@ func (p *ManyPayload) clearIncluded() {
 func (p *ManyPayload) AddPagination(paginator Paginator) {
 	p.Links = paginator.GeneratePagination()
 
-	meta := *p.Meta
-	if meta == nil {
-		meta = Meta{}
+	meta := Meta{}
+	existingMeta := p.Meta
+	if existingMeta != nil {
+		meta = *existingMeta
 	}
 
 	results := &Meta{
@@ -63,6 +64,8 @@ func (p *ManyPayload) AddPagination(paginator Paginator) {
 	}
 
 	meta["results"] = results
+
+	p.Meta = &meta
 }
 
 // ResourceObjNulls is used to represent a generic JSON API Resource with null fields
