@@ -7,9 +7,9 @@ import (
 )
 
 func TestOffsetPagination_GeneratePagination(t *testing.T) {
-	var tests = map[string]struct{
+	var tests = map[string]struct {
 		pagination OffsetPagination
-		result Links
+		result     Links
 	}{
 		"0 offset": {
 			pagination: OffsetPagination{
@@ -17,11 +17,10 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Limit: 100,
 				Total: 334,
 			},
-			result:     Links{
+			result: Links{
 				KeyNextPage: "/?page[limit]=100&page[offset]=100",
 				KeyLastPage: "/?page[limit]=100&page[offset]=300",
 			},
-
 		},
 		"0 offset and total a multiple of limit": {
 			pagination: OffsetPagination{
@@ -29,11 +28,10 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Limit: 100,
 				Total: 300,
 			},
-			result:     Links{
+			result: Links{
 				KeyNextPage: "/?page[limit]=100&page[offset]=100",
 				KeyLastPage: "/?page[limit]=100&page[offset]=200",
 			},
-
 		},
 		"Offset below limit": {
 			pagination: OffsetPagination{
@@ -41,12 +39,11 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Limit: 100,
 				Total: 334,
 			},
-			result:     Links{
+			result: Links{
 				KeyFirstPage: "/?page[limit]=100&page[offset]=0",
-				KeyNextPage: "/?page[limit]=100&page[offset]=180",
-				KeyLastPage: "/?page[limit]=100&page[offset]=280",
+				KeyNextPage:  "/?page[limit]=100&page[offset]=180",
+				KeyLastPage:  "/?page[limit]=100&page[offset]=280",
 			},
-
 		},
 		"Mid range offset": {
 			pagination: OffsetPagination{
@@ -54,13 +51,12 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Limit: 100,
 				Total: 334,
 			},
-			result:     Links{
-				KeyFirstPage: "/?page[limit]=100&page[offset]=0",
+			result: Links{
+				KeyFirstPage:    "/?page[limit]=100&page[offset]=0",
 				KeyPreviousPage: "/?page[limit]=100&page[offset]=11",
-				KeyNextPage: "/?page[limit]=100&page[offset]=211",
-				KeyLastPage: "/?page[limit]=100&page[offset]=311",
+				KeyNextPage:     "/?page[limit]=100&page[offset]=211",
+				KeyLastPage:     "/?page[limit]=100&page[offset]=311",
 			},
-
 		},
 		"Offset with other further params untouched": {
 			pagination: OffsetPagination{
@@ -68,13 +64,12 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Limit: 100,
 				Total: 334,
 			},
-			result:     Links{
-				KeyFirstPage: "/?page[limit]=100&page[offset]=0&page[sort]=-1&aparam=2",
+			result: Links{
+				KeyFirstPage:    "/?page[limit]=100&page[offset]=0&page[sort]=-1&aparam=2",
 				KeyPreviousPage: "/?page[limit]=100&page[offset]=11&page[sort]=-1&aparam=2",
-				KeyNextPage: "/?page[limit]=100&page[offset]=211&page[sort]=-1&aparam=2",
-				KeyLastPage: "/?page[limit]=100&page[offset]=311&page[sort]=-1&aparam=2",
+				KeyNextPage:     "/?page[limit]=100&page[offset]=211&page[sort]=-1&aparam=2",
+				KeyLastPage:     "/?page[limit]=100&page[offset]=311&page[sort]=-1&aparam=2",
 			},
-
 		},
 		"Offset with other previous params untouched": {
 			pagination: OffsetPagination{
@@ -82,13 +77,12 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Limit: 100,
 				Total: 334,
 			},
-			result:     Links{
-				KeyFirstPage: "/?page[sort]=-1&aparam=2&page[limit]=100&page[offset]=0",
+			result: Links{
+				KeyFirstPage:    "/?page[sort]=-1&aparam=2&page[limit]=100&page[offset]=0",
 				KeyPreviousPage: "/?page[sort]=-1&aparam=2&page[limit]=100&page[offset]=11",
-				KeyNextPage: "/?page[sort]=-1&aparam=2&page[limit]=100&page[offset]=211",
-				KeyLastPage: "/?page[sort]=-1&aparam=2&page[limit]=100&page[offset]=311",
+				KeyNextPage:     "/?page[sort]=-1&aparam=2&page[limit]=100&page[offset]=211",
+				KeyLastPage:     "/?page[sort]=-1&aparam=2&page[limit]=100&page[offset]=311",
 			},
-
 		},
 		"Offset with other params untouched": {
 			pagination: OffsetPagination{
@@ -96,13 +90,12 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Limit: 100,
 				Total: 334,
 			},
-			result:     Links{
-				KeyFirstPage: "/?page[sort]=-1&page[limit]=100&aparam=2&page[offset]=0&lastparam=owt",
+			result: Links{
+				KeyFirstPage:    "/?page[sort]=-1&page[limit]=100&aparam=2&page[offset]=0&lastparam=owt",
 				KeyPreviousPage: "/?page[sort]=-1&page[limit]=100&aparam=2&page[offset]=11&lastparam=owt",
-				KeyNextPage: "/?page[sort]=-1&page[limit]=100&aparam=2&page[offset]=211&lastparam=owt",
-				KeyLastPage: "/?page[sort]=-1&page[limit]=100&aparam=2&page[offset]=311&lastparam=owt",
+				KeyNextPage:     "/?page[sort]=-1&page[limit]=100&aparam=2&page[offset]=211&lastparam=owt",
+				KeyLastPage:     "/?page[sort]=-1&page[limit]=100&aparam=2&page[offset]=311&lastparam=owt",
 			},
-
 		},
 		"No params set": {
 			pagination: OffsetPagination{
@@ -110,11 +103,10 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Limit: 100,
 				Total: 334,
 			},
-			result:     Links{
+			result: Links{
 				KeyNextPage: "/?page[limit]=100&page[offset]=100",
 				KeyLastPage: "/?page[limit]=100&page[offset]=300",
 			},
-
 		},
 		"No paging set": {
 			pagination: OffsetPagination{
@@ -122,11 +114,10 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Limit: 100,
 				Total: 334,
 			},
-			result:     Links{
+			result: Links{
 				KeyNextPage: "/?param=owt&page[limit]=100&page[offset]=100",
 				KeyLastPage: "/?param=owt&page[limit]=100&page[offset]=300",
 			},
-
 		},
 		"Non numeric parameter values": {
 			pagination: OffsetPagination{
@@ -134,17 +125,70 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Limit: 100,
 				Total: 334,
 			},
-			result:     Links{
+			result: Links{
 				KeyLastPage: "/?page[limit]=100&page[offset]=300",
 				KeyNextPage: "/?page[limit]=100&page[offset]=100",
 			},
-
 		},
 	}
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
 			underTest := test.pagination
 			assert.Equal(t, test.result, *underTest.GeneratePagination())
+		})
+	}
+}
+
+func TestManyPayload_AddPagination(t *testing.T) {
+	var tests = map[string]struct {
+		payload   ManyPayload
+		paginator OffsetPagination
+		expected  ManyPayload
+	}{
+		"adds results meta": {
+			payload: ManyPayload{
+				Data: nil,
+			},
+			paginator: OffsetPagination{
+				Total: 10,
+				Limit: 100,
+			},
+			expected: ManyPayload{
+				Data: nil,
+				Meta: &Meta{
+					"results": &Meta{
+						"total": int64(10),
+					},
+				},
+			},
+		},
+		"appends results meta": {
+			payload: ManyPayload{
+				Data: nil,
+				Meta: &Meta{
+					"foo": "bar",
+				},
+			},
+			paginator: OffsetPagination{
+				Total: 10,
+				Limit: 100,
+			},
+			expected: ManyPayload{
+				Data: nil,
+				Meta: &Meta{
+					"foo": "bar",
+					"results": &Meta{
+						"total": int64(10),
+					},
+				},
+			},
+		},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			test.payload.AddPagination(&test.paginator)
+			assert.Equal(t, test.expected, test.payload)
 		})
 	}
 }

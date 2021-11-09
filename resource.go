@@ -13,7 +13,6 @@ import (
 type Payloader interface {
 	clearIncluded()
 	AddPagination(paginator Paginator)
-	AddMeta(meta *Meta)
 }
 
 // NulledPayload allows for raw message to inspect nulls
@@ -38,10 +37,6 @@ func (p *OnePayload) AddPagination(paginator Paginator) {
 
 }
 
-func (p *OnePayload) AddMeta(meta *Meta) {
-	p.Meta = meta
-}
-
 // ManyPayload is used to represent a generic JSON API payload where many
 // resources (Nodes) were included in an [] in the "data" key
 type ManyPayload struct {
@@ -57,10 +52,20 @@ func (p *ManyPayload) clearIncluded() {
 
 func (p *ManyPayload) AddPagination(paginator Paginator) {
 	p.Links = paginator.GeneratePagination()
-}
 
-func (p *ManyPayload) AddMeta(meta *Meta) {
-	p.Meta = meta
+	meta := Meta{}
+	existingMeta := p.Meta
+	if existingMeta != nil {
+		meta = *existingMeta
+	}
+
+	results := &Meta{
+		"total": paginator.GetTotal(),
+	}
+
+	meta["results"] = results
+
+	p.Meta = &meta
 }
 
 // ResourceObjNulls is used to represent a generic JSON API Resource with null fields
@@ -159,6 +164,7 @@ type RelationshipMetable interface {
 // Paginator allows clients to paginate the result set
 type Paginator interface {
 	GeneratePagination() *Links
+	GetTotal() int64
 }
 
 type OffsetPagination struct {
@@ -230,6 +236,10 @@ func (p *OffsetPagination) GeneratePagination() *Links {
 	}
 
 	return &links
+}
+
+func (p *OffsetPagination) GetTotal() int64 {
+	return p.Total
 }
 
 func getPageParam(name, url string) int64 {
