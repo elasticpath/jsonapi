@@ -875,7 +875,7 @@ func handleStruct(
 		var buf []byte
 		if val, ok := attribute.(string); ok {
 			// Escape quotes
-			val = `"` + strings.ReplaceAll(val, `"`, `\"`) + `"`
+			val = fmt.Sprintf(`"%s"`, strings.ReplaceAll(val, `"`, `\"`))
 			// Escape new line flags
 			val = strings.ReplaceAll(val, "\r", "\\r")
 			val = strings.ReplaceAll(val, "\n", "\\n")
