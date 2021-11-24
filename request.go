@@ -874,13 +874,7 @@ func handleStruct(
 	if method.IsValid() {
 		var buf []byte
 		if val, ok := attribute.(string); ok {
-			// Escape quotes
-			val = fmt.Sprintf(`"%s"`, strings.ReplaceAll(val, `"`, `\"`))
-			// Escape new line flags
-			val = strings.ReplaceAll(val, "\r", "\\r")
-			val = strings.ReplaceAll(val, "\n", "\\n")
-
-			buf = []byte(val)
+			buf = []byte(`"` + strings.ReplaceAll(val, `"`, `\"`) + `"`)
 		}
 		if val, ok := attribute.(float64); ok {
 			buf = []byte(strconv.FormatFloat(val, 'f', -1, 64))
