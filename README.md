@@ -179,6 +179,14 @@ used as the key in the `relationships` hash for the record. The optional
 third argument is `omitempty` - if present will prevent non existent to-one and
 to-many from being serialized.
 
+#### `meta`
+
+```
+`jsonapi:"meta,<key name in meta object>,<optional: omitempty>"`
+```
+
+Meta can be used to include additional metadata.
+
 ## Methods Reference
 
 **All `Marshal` and `Unmarshal` methods expect pointers to struct
