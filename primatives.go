@@ -19,7 +19,7 @@ func (i *JSONInt) UnmarshalJSON(data []byte) error {
 	// If this method was called, the value was set.
 	i.Set = true
 
-	if data == nil {
+	if data == nil || string(data) == "null" {
 		// The key was set to null
 		i.Null = true
 		return nil
