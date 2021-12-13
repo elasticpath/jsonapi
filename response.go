@@ -541,7 +541,7 @@ func visitModelNode(model interface{}, included *map[string]*ResourceObj,
 	}
 
 	// Don't return empty meta
-	if len(*node.Meta) == 0 {
+	if node.Meta != nil && len(*node.Meta) == 0 {
 		node.Meta = nil
 	}
 
