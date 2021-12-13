@@ -408,8 +408,14 @@ func visitModelNode(model interface{}, included *map[string]*ResourceObj,
 			}
 
 			// See if we need to omit this field
-			if omitEmpty && reflect.DeepEqual(fieldValue.Interface(), emptyValue.Interface()) {
-				continue
+			isSlice := fieldValue.Type().Kind() == reflect.Slice
+			if omitEmpty {
+				if isSlice && fieldValue.Len() < 1 || (!isSlice && fieldValue.IsNil()) {
+					continue
+				}
+				if reflect.DeepEqual(fieldValue.Interface(), emptyValue.Interface()) {
+					continue
+				}
 			}
 
 			strAttr, ok := fieldValue.Interface().(string)
