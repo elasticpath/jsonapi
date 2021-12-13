@@ -540,6 +540,11 @@ func visitModelNode(model interface{}, included *map[string]*ResourceObj,
 		node.Meta = metableModel.JSONAPIMeta()
 	}
 
+	// Don't return empty meta
+	if len(*node.Meta) == 0 {
+		node.Meta = nil
+	}
+
 	return node, nil
 }
 
