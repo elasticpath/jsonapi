@@ -24,7 +24,7 @@ jobs:
   test:
     needs: [check_duplicate_workflow]
     runs-on: ubuntu-20.04
-    container: 'golang: 1.16.15'
+    container: golang:1.16.15
     if: ${{ needs.check_duplicate_workflow.outputs.should_skip != 'true' }}
     steps:
       - name: Check out repository code
