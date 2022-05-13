@@ -1,0 +1,35 @@
+name: CI/CD for the jsonapi
+
+on:
+  push:
+  pull_request:
+    branches:
+      - 'main'
+
+jobs:
+  # This job uses skip-duplicate-actions to skip one of the duplicate workflow runs when you push to a branch with an open PR.
+  check_duplicate_workflow:
+    needs: []
+    runs-on: ubuntu-20.04
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@v3.4.1
+        with:
+          skip_after_successful_duplicate: 'true'
+          concurrent_skipping: 'same_content_newer'
+          do_not_skip: '["push"]'
+
+  test:
+    needs: [check_duplicate_workflow]
+    runs-on: ubuntu-20.04
+    container: 'golang: 1.16.15'
+    if: ${{ needs.check_duplicate_workflow.outputs.should_skip != 'true' }}
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Run tests
+        run: |
+          go get -v -t -d ./...
+          go test -v ./...
