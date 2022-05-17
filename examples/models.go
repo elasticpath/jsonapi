@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/moltin/jsonapi"
+	"github.com/elasticpath/jsonapi"
 )
 
 // Blog is a model representing a blog site

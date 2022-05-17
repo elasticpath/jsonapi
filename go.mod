@@ -1,4 +1,4 @@
-module github.com/moltin/jsonapi
+module github.com/elasticpath/jsonapi
 
 go 1.16
 
