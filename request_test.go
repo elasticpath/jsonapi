@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/moltin/jsonapi"
+	"github.com/elasticpath/jsonapi"
 )
 
 func unmarshalSamplePayload() (*Blog, error) {

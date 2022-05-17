@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/moltin/jsonapi"
+	"github.com/elasticpath/jsonapi"
 )
 
 func TestExampleHandler_post(t *testing.T) {

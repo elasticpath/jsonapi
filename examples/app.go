@@ -10,7 +10,7 @@ import (
 	"net/http/httptest"
 	"time"
 
-	"github.com/moltin/jsonapi"
+	"github.com/elasticpath/jsonapi"
 )
 
 func main() {
