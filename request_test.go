@@ -3,6 +3,7 @@ package jsonapi_test
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"reflect"
 	"sort"
@@ -162,6 +163,23 @@ func sampleWithPointerPayload(m map[string]interface{}) io.Reader {
 			ID:         "2",
 			Type:       "with-pointers",
 			Attributes: m,
+		},
+	}
+
+	out := bytes.NewBuffer(nil)
+	json.NewEncoder(out).Encode(payload)
+
+	return out
+}
+
+func samplePayloadWithSliceOfSlice() io.Reader {
+	payload := &jsonapi.OnePayload{
+		Data: &jsonapi.ResourceObj{
+			ID:   "2",
+			Type: "blogs",
+			Attributes: map[string]interface{}{
+				"ratings": [][]string{{"1", "2"}},
+			},
 		},
 	}
 
@@ -546,6 +564,29 @@ func TestUnmarshalSetsID(t *testing.T) {
 
 	if out.ID != 2 {
 		t.Fatalf("Did not set ID on dst interface")
+	}
+}
+
+func TestUnmarshalSetsSliceOfSlices(t *testing.T) {
+	in := samplePayloadWithSliceOfSlice()
+	out := new(Blog)
+
+	if err := jsonapi.UnmarshalPayload(in, out); err != nil {
+		t.Fatal(err)
+	}
+
+	fmt.Printf("%+v", out)
+
+	if len(out.Ratings) != 1 {
+		t.Fatal("Did not set ratings slice")
+	}
+
+	if len(out.Ratings[0]) != 2 {
+		t.Fatal("Did not set ratings slice")
+	}
+
+	if out.Ratings[0][0] != "1" {
+		t.Fatalf("Did not set ratings slice")
 	}
 }
 
@@ -1297,8 +1338,8 @@ func TestUnmarshalNestedStructSlice(t *testing.T) {
 	}
 }
 
-func TestNumericTypes(t *testing.T)  {
-	var tests = map[string]struct{
+func TestNumericTypes(t *testing.T) {
+	var tests = map[string]struct {
 		In map[string]interface{}
 	}{
 		"Int": {
@@ -1324,7 +1365,6 @@ func TestNumericTypes(t *testing.T)  {
 
 	}
 	type pLoad struct {
-
 	}
 	out := new(Numeric)
 	for name, test := range tests {
@@ -1347,7 +1387,6 @@ func TestNumericTypes(t *testing.T)  {
 				t.Fatal(err)
 			}
 		})
-
 
 	}
 }
