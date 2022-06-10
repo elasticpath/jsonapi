@@ -734,6 +734,13 @@ func handleSlice(
 			return reflect.Value{}, tErr
 		}
 
+		// If this is a slice of slices, just append and move on
+		// TODO: This only accounts for strings, we need to account for every type in future
+		if v.Type() == reflect.TypeOf([]string{}) {
+			vals = reflect.Append(vals, v)
+			continue
+		}
+
 		if v.Kind() == reflect.Slice {
 			vals = reflect.Append(vals, v.Elem())
 		} else {
