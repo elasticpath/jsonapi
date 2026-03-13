@@ -174,10 +174,6 @@ type OffsetPagination struct {
 }
 
 func (p *OffsetPagination) GeneratePagination() *Links {
-	if p.Total < p.Limit { // no pagination needed
-		return nil
-	}
-
 	// initiate the URL - if the page offset and Limit have not been set or is devoid of all
 	// query parameters then initialising will make string replacement a simple operation
 
@@ -195,22 +191,32 @@ func (p *OffsetPagination) GeneratePagination() *Links {
 	}
 	offset := int64(math.Max(float64(getPageParam("offset", p.URL)), float64(0)))
 
-	if offset > 0 {
-		firstUrl := p.URL
-		replaceParam(&firstUrl, `page[limit]`, strconv.FormatInt(limit, 10))
-		replaceParam(&firstUrl, `page[offset]`, strconv.FormatInt(0, 10))
-		links[KeyFirstPage] = firstUrl
-	}
+	// current link is always present
+	currentUrl := p.URL
+	replaceParam(&currentUrl, `page[limit]`, strconv.FormatInt(limit, 10))
+	replaceParam(&currentUrl, `page[offset]`, strconv.FormatInt(offset, 10))
+	links[KeyCurrentPage] = currentUrl
 
-	if offset > limit {
+	// first link is always present
+	firstUrl := p.URL
+	replaceParam(&firstUrl, `page[limit]`, strconv.FormatInt(limit, 10))
+	replaceParam(&firstUrl, `page[offset]`, strconv.FormatInt(0, 10))
+	links[KeyFirstPage] = firstUrl
+
+	// prev link is present on all pages except the first
+	if offset > 0 {
 		prevUrl := p.URL
 		replaceParam(&prevUrl, `page[limit]`, strconv.FormatInt(limit, 10))
 		prevOffset := offset - limit
+		if prevOffset < 0 {
+			prevOffset = 0
+		}
 		replaceParam(&prevUrl, `page[offset]`, strconv.FormatInt(prevOffset, 10))
 		links[KeyPreviousPage] = prevUrl
 	}
 
-	if offset+limit < p.Total-limit {
+	// next link is present on all pages except the last
+	if offset+limit < p.Total {
 		nextUrl := p.URL
 		replaceParam(&nextUrl, `page[limit]`, strconv.FormatInt(limit, 10))
 		nextOffset := offset + limit
@@ -218,22 +224,24 @@ func (p *OffsetPagination) GeneratePagination() *Links {
 		links[KeyNextPage] = nextUrl
 	}
 
-	if offset+limit < p.Total {
-		lastUrl := p.URL
-		replaceParam(&lastUrl, `page[limit]`, strconv.FormatInt(limit, 10))
-		pages := p.Total / limit
-		if p.Total%limit > 0 {
-			pages += 1
-		}
-		lastOffset := ((pages - 1) * limit)
-		offsetShift := offset % limit
-		lastOffset += offsetShift
-		if lastOffset > p.Total {
-			lastOffset -= limit
-		}
-		replaceParam(&lastUrl, `page[offset]`, strconv.FormatInt(lastOffset, 10))
-		links[KeyLastPage] = lastUrl
+	// last link is always present
+	lastUrl := p.URL
+	replaceParam(&lastUrl, `page[limit]`, strconv.FormatInt(limit, 10))
+	pages := p.Total / limit
+	if p.Total%limit > 0 {
+		pages += 1
 	}
+	lastOffset := ((pages - 1) * limit)
+	offsetShift := offset % limit
+	lastOffset += offsetShift
+	if lastOffset > p.Total {
+		lastOffset -= limit
+	}
+	if lastOffset < 0 {
+		lastOffset = 0
+	}
+	replaceParam(&lastUrl, `page[offset]`, strconv.FormatInt(lastOffset, 10))
+	links[KeyLastPage] = lastUrl
 
 	return &links
 }
