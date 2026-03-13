@@ -34,6 +34,9 @@ const (
 	// KeyNextPage is the key to the links object whose value contains a link to
 	// the next page of data
 	KeyNextPage = "next"
+	// KeyCurrentPage is the key to the links object whose value contains a link
+	// to the current page of data
+	KeyCurrentPage = "current"
 
 	// QueryParamPageNumber is a JSON API query parameter used in a page based
 	// pagination strategy in conjunction with QueryParamPageSize

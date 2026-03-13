@@ -18,8 +18,10 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Total: 334,
 			},
 			result: Links{
-				KeyNextPage: "/?page[limit]=100&page[offset]=100",
-				KeyLastPage: "/?page[limit]=100&page[offset]=300",
+				KeyCurrentPage: "/?page[limit]=100&page[offset]=0",
+				KeyFirstPage:   "/?page[limit]=100&page[offset]=0",
+				KeyNextPage:    "/?page[limit]=100&page[offset]=100",
+				KeyLastPage:    "/?page[limit]=100&page[offset]=300",
 			},
 		},
 		"0 offset and total a multiple of limit": {
@@ -29,8 +31,10 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Total: 300,
 			},
 			result: Links{
-				KeyNextPage: "/?page[limit]=100&page[offset]=100",
-				KeyLastPage: "/?page[limit]=100&page[offset]=200",
+				KeyCurrentPage: "/?page[limit]=100&page[offset]=0",
+				KeyFirstPage:   "/?page[limit]=100&page[offset]=0",
+				KeyNextPage:    "/?page[limit]=100&page[offset]=100",
+				KeyLastPage:    "/?page[limit]=100&page[offset]=200",
 			},
 		},
 		"Offset below limit": {
@@ -40,9 +44,11 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Total: 334,
 			},
 			result: Links{
-				KeyFirstPage: "/?page[limit]=100&page[offset]=0",
-				KeyNextPage:  "/?page[limit]=100&page[offset]=180",
-				KeyLastPage:  "/?page[limit]=100&page[offset]=280",
+				KeyCurrentPage:  "/?page[limit]=100&page[offset]=80",
+				KeyFirstPage:    "/?page[limit]=100&page[offset]=0",
+				KeyPreviousPage: "/?page[limit]=100&page[offset]=0",
+				KeyNextPage:     "/?page[limit]=100&page[offset]=180",
+				KeyLastPage:     "/?page[limit]=100&page[offset]=280",
 			},
 		},
 		"Mid range offset": {
@@ -52,6 +58,7 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Total: 334,
 			},
 			result: Links{
+				KeyCurrentPage:  "/?page[limit]=100&page[offset]=111",
 				KeyFirstPage:    "/?page[limit]=100&page[offset]=0",
 				KeyPreviousPage: "/?page[limit]=100&page[offset]=11",
 				KeyNextPage:     "/?page[limit]=100&page[offset]=211",
@@ -65,6 +72,7 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Total: 334,
 			},
 			result: Links{
+				KeyCurrentPage:  "/?page[limit]=100&page[offset]=111&page[sort]=-1&aparam=2",
 				KeyFirstPage:    "/?page[limit]=100&page[offset]=0&page[sort]=-1&aparam=2",
 				KeyPreviousPage: "/?page[limit]=100&page[offset]=11&page[sort]=-1&aparam=2",
 				KeyNextPage:     "/?page[limit]=100&page[offset]=211&page[sort]=-1&aparam=2",
@@ -78,6 +86,7 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Total: 334,
 			},
 			result: Links{
+				KeyCurrentPage:  "/?page[sort]=-1&aparam=2&page[limit]=100&page[offset]=111",
 				KeyFirstPage:    "/?page[sort]=-1&aparam=2&page[limit]=100&page[offset]=0",
 				KeyPreviousPage: "/?page[sort]=-1&aparam=2&page[limit]=100&page[offset]=11",
 				KeyNextPage:     "/?page[sort]=-1&aparam=2&page[limit]=100&page[offset]=211",
@@ -91,6 +100,7 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Total: 334,
 			},
 			result: Links{
+				KeyCurrentPage:  "/?page[sort]=-1&page[limit]=100&aparam=2&page[offset]=111&lastparam=owt",
 				KeyFirstPage:    "/?page[sort]=-1&page[limit]=100&aparam=2&page[offset]=0&lastparam=owt",
 				KeyPreviousPage: "/?page[sort]=-1&page[limit]=100&aparam=2&page[offset]=11&lastparam=owt",
 				KeyNextPage:     "/?page[sort]=-1&page[limit]=100&aparam=2&page[offset]=211&lastparam=owt",
@@ -104,8 +114,10 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Total: 334,
 			},
 			result: Links{
-				KeyNextPage: "/?page[limit]=100&page[offset]=100",
-				KeyLastPage: "/?page[limit]=100&page[offset]=300",
+				KeyCurrentPage: "/?page[limit]=100&page[offset]=0",
+				KeyFirstPage:   "/?page[limit]=100&page[offset]=0",
+				KeyNextPage:    "/?page[limit]=100&page[offset]=100",
+				KeyLastPage:    "/?page[limit]=100&page[offset]=300",
 			},
 		},
 		"No paging set": {
@@ -115,8 +127,10 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Total: 334,
 			},
 			result: Links{
-				KeyNextPage: "/?param=owt&page[limit]=100&page[offset]=100",
-				KeyLastPage: "/?param=owt&page[limit]=100&page[offset]=300",
+				KeyCurrentPage: "/?param=owt&page[limit]=100&page[offset]=0",
+				KeyFirstPage:   "/?param=owt&page[limit]=100&page[offset]=0",
+				KeyNextPage:    "/?param=owt&page[limit]=100&page[offset]=100",
+				KeyLastPage:    "/?param=owt&page[limit]=100&page[offset]=300",
 			},
 		},
 		"Non numeric parameter values": {
@@ -126,8 +140,63 @@ func TestOffsetPagination_GeneratePagination(t *testing.T) {
 				Total: 334,
 			},
 			result: Links{
-				KeyLastPage: "/?page[limit]=100&page[offset]=300",
-				KeyNextPage: "/?page[limit]=100&page[offset]=100",
+				KeyCurrentPage: "/?page[limit]=100&page[offset]=0",
+				KeyFirstPage:   "/?page[limit]=100&page[offset]=0",
+				KeyNextPage:    "/?page[limit]=100&page[offset]=100",
+				KeyLastPage:    "/?page[limit]=100&page[offset]=300",
+			},
+		},
+		"Single page - total less than limit": {
+			pagination: OffsetPagination{
+				URL:   "/?page[limit]=100&page[offset]=0",
+				Limit: 100,
+				Total: 50,
+			},
+			result: Links{
+				KeyCurrentPage: "/?page[limit]=100&page[offset]=0",
+				KeyFirstPage:   "/?page[limit]=100&page[offset]=0",
+				KeyLastPage:    "/?page[limit]=100&page[offset]=0",
+			},
+		},
+		"Last page - no next link": {
+			pagination: OffsetPagination{
+				URL:   "/?page[limit]=100&page[offset]=300",
+				Limit: 100,
+				Total: 334,
+			},
+			result: Links{
+				KeyCurrentPage:  "/?page[limit]=100&page[offset]=300",
+				KeyFirstPage:    "/?page[limit]=100&page[offset]=0",
+				KeyPreviousPage: "/?page[limit]=100&page[offset]=200",
+				KeyLastPage:     "/?page[limit]=100&page[offset]=300",
+			},
+		},
+		"Second page - prev link present": {
+			pagination: OffsetPagination{
+				URL:   "/?page[limit]=100&page[offset]=100",
+				Limit: 100,
+				Total: 334,
+			},
+			result: Links{
+				KeyCurrentPage:  "/?page[limit]=100&page[offset]=100",
+				KeyFirstPage:    "/?page[limit]=100&page[offset]=0",
+				KeyPreviousPage: "/?page[limit]=100&page[offset]=0",
+				KeyNextPage:     "/?page[limit]=100&page[offset]=200",
+				KeyLastPage:     "/?page[limit]=100&page[offset]=300",
+			},
+		},
+		"Second to last page - next link present": {
+			pagination: OffsetPagination{
+				URL:   "/?page[limit]=100&page[offset]=200",
+				Limit: 100,
+				Total: 334,
+			},
+			result: Links{
+				KeyCurrentPage:  "/?page[limit]=100&page[offset]=200",
+				KeyFirstPage:    "/?page[limit]=100&page[offset]=0",
+				KeyPreviousPage: "/?page[limit]=100&page[offset]=100",
+				KeyNextPage:     "/?page[limit]=100&page[offset]=300",
+				KeyLastPage:     "/?page[limit]=100&page[offset]=300",
 			},
 		},
 	}
@@ -155,6 +224,11 @@ func TestManyPayload_AddPagination(t *testing.T) {
 			},
 			expected: ManyPayload{
 				Data: nil,
+				Links: &Links{
+					KeyCurrentPage: "?page[limit]=100&page[offset]=0",
+					KeyFirstPage:   "?page[limit]=100&page[offset]=0",
+					KeyLastPage:    "?page[limit]=100&page[offset]=0",
+				},
 				Meta: &Meta{
 					"results": &Meta{
 						"total": int64(10),
@@ -175,6 +249,11 @@ func TestManyPayload_AddPagination(t *testing.T) {
 			},
 			expected: ManyPayload{
 				Data: nil,
+				Links: &Links{
+					KeyCurrentPage: "?page[limit]=100&page[offset]=0",
+					KeyFirstPage:   "?page[limit]=100&page[offset]=0",
+					KeyLastPage:    "?page[limit]=100&page[offset]=0",
+				},
 				Meta: &Meta{
 					"foo": "bar",
 					"results": &Meta{
